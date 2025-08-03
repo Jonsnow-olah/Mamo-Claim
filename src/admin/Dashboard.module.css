@@ -1,0 +1,58 @@
+.dashboard {
+  display: flex;
+  height: 100vh;
+  font-family: sans-serif;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #1f2937;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+}
+
+.collapsed {
+  width: 60px;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.nav li {
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.title {
+  margin-bottom: 20px;
+}
+
+.logoutBtn {
+  margin-top: auto;
+  padding: 10px;
+  background-color: #ef4444;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.content {
+  flex: 1;
+  padding: 40px;
+  background-color: #f9fafb;
+}
