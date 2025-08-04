@@ -4,19 +4,23 @@
   font-family: sans-serif;
 }
 
+
 .sidebar {
   width: 250px;
   background-color: #1f2937;
   color: white;
-  padding: 20px;
+  padding: 20px 10px;
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
+  overflow: hidden;
 }
+
 
 .collapsed {
   width: 60px;
 }
+
 
 .toggleBtn {
   background: none;
@@ -27,19 +31,21 @@
   cursor: pointer;
 }
 
-.nav ul {
+
+.nav {
   list-style: none;
   padding: 0;
 }
 
+
 .nav li {
   margin: 10px 0;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.title {
-  margin-bottom: 20px;
-}
 
 .logoutBtn {
   margin-top: auto;
@@ -49,7 +55,16 @@
   color: white;
   cursor: pointer;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+
+
+.icon {
+  font-size: 16px;
+}
+
 
 .content {
   flex: 1;

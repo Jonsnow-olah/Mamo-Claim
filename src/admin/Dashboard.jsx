@@ -1,45 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import styles from './Dashboard.module.css';
+import React, { useState } from 'react';
+import { FaSignOutAlt, FaUpload, FaBars } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import styles from './Dashboard.module.css';
+import ImportCSV from './ImportCSV';
+
 
 const Dashboard = () => {
-  const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const [collapsed, setCollapsed] = useState(false);
+  const [activePage, setActivePage] = useState('import');
 
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (!token) navigate('/admin/login');
-  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     navigate('/admin/login');
   };
 
+
   return (
     <div className={styles.dashboard}>
       <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
-        <button onClick={() => setCollapsed(!collapsed)} className={styles.toggleBtn}>
-          {collapsed ? '→' : '←'}
+        <button className={styles.toggleBtn} onClick={() => setCollapsed(!collapsed)}>
+          <FaBars />
         </button>
-        {!collapsed && (
-          <nav className={styles.nav}>
-            <h2 className={styles.title}>Admin Panel</h2>
-            <ul>
-              <li>Dashboard</li>
-              <li>Users</li>
-              <li>Settings</li>
-            </ul>
-          </nav>
-        )}
-        <button onClick={handleLogout} className={styles.logoutBtn}>Logout</button>
+        <ul className={styles.nav}>
+          <li onClick={() => setActivePage('import')}>
+            <FaUpload className={styles.icon} /> {!collapsed && 'Import CSV File'}
+          </li>
+        </ul>
+        <button className={styles.logoutBtn} onClick={handleLogout}>
+          <FaSignOutAlt className={styles.icon} /> {!collapsed && 'Logout'}
+        </button>
       </aside>
+
+
       <main className={styles.content}>
-        <h1>Welcome to the Dashboard</h1>
-        <p>This is a protected admin area.</p>
+        {activePage === 'import' && <ImportCSV />}
       </main>
     </div>
   );
 };
+
 
 export default Dashboard;
