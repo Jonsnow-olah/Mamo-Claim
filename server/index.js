@@ -5,6 +5,10 @@ import uploadCodes from './routes/admin/uploadCodes.js';
 import claimRoute from './routes/user/claim.js';
 import adminGetCodes from './routes/admin/get-codes.js';
 import markUsedRoute from './routes/user/mark-used.js';
+import createProjectRoute from './routes/admin/createProject.js';
+import projectsRoute from './routes/admin/projects.js';
+import codesRoute from './routes/admin/codes.js';
+import redeemRoute from './routes/user/redeem.js';
 import { initDB } from './db.js'; 
 
 
@@ -23,6 +27,10 @@ initDB().then(() => {
   app.use('/api/claim', claimRoute);
   app.use('/api/admin/get-codes', adminGetCodes);
   app.use('/api/mark-used', markUsedRoute);
+  app.use('/api/admin/create-project', createProjectRoute);
+  app.use('/api/admin/projects', projectsRoute);
+  app.use('/api/admin/codes', codesRoute);
+  app.use('/api/redeem', redeemRoute);
 
 
   app.listen(PORT, () => {

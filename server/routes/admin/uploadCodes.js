@@ -22,13 +22,14 @@ router.post('/', authMiddleware, async (req, res) => {
 
 
   try {
-    // Try to get the project by slug
     let project = await db.get('SELECT id FROM projects WHERE slug = ?', [projectSlug]);
 
 
     if (!project) {
-      // Auto-create project if not found
-      await db.run('INSERT INTO projects (name, slug) VALUES (?, ?)', [projectSlug, projectSlug]);
+      await db.run(
+        'INSERT INTO projects (name, slug) VALUES (?, ?)',
+        [projectSlug, projectSlug]
+      );
       project = await db.get('SELECT id FROM projects WHERE slug = ?', [projectSlug]);
       console.log(`✅ Created new project: ${projectSlug}`);
     } else {
@@ -36,13 +37,17 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 
 
+    // Prepare insert statement
     const insertStmt = await db.prepare(`
-      INSERT INTO codes (code, project_id) VALUES (?, ?)
+      INSERT INTO codes (code, discord_id, username, redeemed, updated_at, project_id)
+      VALUES (?, ?, ?, ?, datetime('now'), ?)
     `);
 
 
-    for (const code of codes) {
-      await insertStmt.run(code, project.id);
+    // Insert each code entry
+    for (const entry of codes) {
+      const { code, discordId, discordUsername } = entry;
+      await insertStmt.run(code, discordId || null, discordUsername || null, 0, project.id);
     }
 
 

@@ -1,7 +1,6 @@
-curl -X POST http://localhost:3001/api/admin/upload-codes \
+curl -X POST http://localhost:3001/api/auth/register \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer " \
   -d '{
-    "projectSlug": "demo-project",
-    "codes": ["ABC123", "DEF456", "GHI789"]
+    "username": "mamo",
+    "password": "mamo0244"
   }

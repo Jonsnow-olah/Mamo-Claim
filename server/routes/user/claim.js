@@ -1,55 +1,72 @@
 import express from 'express';
 import { initDB } from '../../db.js';
 
+
 const router = express.Router();
+const CLAIM_COOLDOWN_MINUTES = 2;
+
 
 router.post('/', async (req, res) => {
-  const { discord_id, project_slug } = req.body;
+  const { discordId, projectSlug, username } = req.body;
 
-  if (!discord_id || !project_slug) {
-    return res.status(400).json({ error: 'discord_id and project_slug are required.' });
+
+  if (!discordId || !projectSlug || !username) {
+    return res.status(400).json({ error: 'discordId, projectSlug, and username are required' });
   }
+
 
   const db = await initDB();
 
+
   try {
-    // Get project
-    const project = await db.get(`SELECT id FROM projects WHERE slug = ?`, project_slug);
-    if (!project) {
-      return res.status(404).json({ error: 'Project not found' });
-    }
+    const project = await db.get('SELECT id FROM projects WHERE slug = ?', [projectSlug]);
+    if (!project) return res.status(404).json({ error: 'Project not found' });
 
-    // Check if user already claimed
-    const existing = await db.get(
-      `SELECT code FROM codes WHERE discord_id = ? AND project_id = ?`,
-      discord_id,
-      project.id
+
+    const now = new Date();
+    const recentClaim = await db.get(
+      `SELECT updated_at FROM codes
+       WHERE discord_id = ? AND project_id = ?
+       ORDER BY updated_at DESC LIMIT 1`,
+      [discordId, project.id]
     );
-    if (existing) {
-      return res.json({ message: 'Code already claimed', code: existing.code });
+
+
+    if (recentClaim) {
+      const lastUpdated = new Date(recentClaim.updated_at);
+      const diffMs = now - lastUpdated;
+      const diffMin = diffMs / (1000 * 60);
+      if (diffMin < CLAIM_COOLDOWN_MINUTES) {
+        return res.status(429).json({ error: 'Please wait before claiming again.' });
+      }
     }
 
-    // Get an unclaimed code
-    const unclaimed = await db.get(
-      `SELECT id, code FROM codes WHERE redeemed = 0 AND project_id = ? LIMIT 1`,
-      project.id
+
+    const codeEntry = await db.get(
+      `SELECT * FROM codes
+       WHERE discord_id IS NULL AND claimed = 0 AND redeemed = 0 AND project_id = ?
+       ORDER BY RANDOM() LIMIT 1`,
+      [project.id]
     );
-    if (!unclaimed) {
-      return res.status(404).json({ error: 'No available codes left' });
-    }
 
-    // Mark it as claimed
+
+    if (!codeEntry) return res.status(404).json({ error: 'No available codes left.' });
+
+
     await db.run(
-      `UPDATE codes SET redeemed = 1, discord_id = ? WHERE id = ?`,
-      discord_id,
-      unclaimed.id
+      `UPDATE codes
+       SET discord_id = ?, username = ?, claimed = 1, updated_at = ?
+       WHERE id = ?`,
+      [discordId, username, now.toISOString(), codeEntry.id]
     );
 
-    return res.json({ message: 'Code claimed successfully', code: unclaimed.code });
+
+    res.json({ code: codeEntry.code });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Server error' });
+    console.error('Claim error:', err);
+    res.status(500).json({ error: 'Failed to claim code' });
   }
 });
+
 
 export default router;
