@@ -10,9 +10,6 @@ router.post('/', authMiddleware, async (req, res) => {
   const { projectSlug, codes } = req.body;
 
 
-  console.log('📥 Received projectSlug:', projectSlug);
-
-
   if (!projectSlug || !codes || !Array.isArray(codes)) {
     return res.status(400).json({ error: 'projectSlug and codes[] are required' });
   }
@@ -31,10 +28,7 @@ router.post('/', authMiddleware, async (req, res) => {
         [projectSlug, projectSlug]
       );
       project = await db.get('SELECT id FROM projects WHERE slug = ?', [projectSlug]);
-      console.log(`✅ Created new project: ${projectSlug}`);
-    } else {
-      console.log(`✅ Found existing project: ${projectSlug} (id: ${project.id})`);
-    }
+    } 
 
 
     // Prepare insert statement

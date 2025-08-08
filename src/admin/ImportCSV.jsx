@@ -21,7 +21,6 @@ const ImportCSV = ({projectSlug}) => {
       complete: (results) => {
         setCsvData(results.data);
         setUploaded(true);
-        console.log('Parsed CSV:', results.data);
         toast.success('CSV file imported successfully!');
       },
     });
@@ -74,7 +73,6 @@ const ImportCSV = ({projectSlug}) => {
 
 
     const response = await res.json();
-    console.log('Upload success:', response);
     toast.success(`Uploaded ${codes.length} codes`);
   } catch (err) {
     console.error(err);

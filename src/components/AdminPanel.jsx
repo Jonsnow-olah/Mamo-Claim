@@ -12,14 +12,11 @@ export default function AdminPanel({ projectSlug }) {
 
 
   async function fetchCodes() {
-    console.log('Fetching codes for slug:', projectSlug)
     setLoading(true);
     setError(null);
     try {
-        console.log('projectSlug:', projectSlug)
       const res = await fetch(`http://localhost:3001/api/admin/get-codes?projectSlug=${projectSlug}`);
       const text = await res.text();
-      console.log('Server response:', text)
       try {
         const data = JSON.parse(text);
         if (!res.ok) throw new Error(data.error || 'Failed to fetch codes');
